@@ -15,10 +15,15 @@ class Database{
             $this->password = "wolfx2020";
         */
         $this->host = "localhost";
-        $this->username = "root";
-       $this->password = "";
+        $this->username = "wolfx";
+       $this->password = "wolfx";
        $this->port = "3306";
         $this->conn = null;
+      //   CREATE USER  'wolfx'@'localhost' IDENTIFIED BY 'wolfx'
+     // CREATE USER 'wolf'@localhost IDENTIFIED BY 'wolf';
+     // GRANT ALL PRIVILEGES ON *.* TO 'wolfx'@'localhost' WITH GRANT OPTION;
+     //grant all privileges on *.* to 'wolf'@'%' identified by 'wolf';
+
     }
     public function getConnection(){
         try
