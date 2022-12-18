@@ -3,7 +3,7 @@ include_once '../config/header.php';
 include_once '../config/helper.php';
 include_once '../config/database.php';
 include_once '../objects/usuarios.php';
-include_once '../token/validatetoken.php';
+//include_once '../token/validatetoken.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -11,7 +11,7 @@ $db = $database->getConnection();
 $usuarios = new Usuarios($db);
 $data = json_decode(file_get_contents("php://input"));
 
-if(!isEmpty($data->usu_id)
+if(!isEmpty($data->usu_password)
 &&!isEmpty($data->usu_email)){
 	
     
