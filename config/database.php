@@ -7,7 +7,7 @@ class Database{
 	private $port;
     public $conn;
 
-    function __construct($dbName="appCondominios") {
+    function __construct($dbName="appLista") {
         $this->db_name = $dbName;
         $this->host = "137.184.184.226";
         $this->username = "wolf";
