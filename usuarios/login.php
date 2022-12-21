@@ -23,7 +23,7 @@ if(!empty($data->username) && !empty($data->password)){
         $jwt = JWT::encode($token, SECRET_KEY);
         $tokenOutput = array( "access_token" => $jwt, "expires_in" => $tokenExp, "token_type" => "bearer");
         http_response_code(200);
-        echo json_encode(array("status" => "success", "code" => 1,"message"=> "Login realizado com sucesso","document"=>  $tokenOutput));
+        return json_encode(array("status" => "success", "code" => 1,"message"=> "Login realizado com sucesso","document"=>  $tokenOutput));
 
     }else{
       http_response_code(400);
