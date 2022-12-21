@@ -10,8 +10,8 @@ class Database{
     function __construct($dbName="applista") {
         $this->db_name = $dbName;
         $this->host = "localhost";
-        $this->username = "root";
-        $this->password = "";
+        $this->username = "wolfx";
+        $this->password = "wolfx";
         $this->port = "3306";
         $this->conn = null;
     }
