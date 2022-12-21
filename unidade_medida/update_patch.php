@@ -5,14 +5,22 @@ include_once '../config/database.php';
 include_once '../objects/unidade_medida.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 $unidade_medida = new Unidade_Medida($db);
 $data = json_decode(file_get_contents("php://input"));
 
-$unidade_medida->uni_id = $data->uni_id;
+$unidade_medida->unid_id = $data->unid_id;
 
-if(!isEmpty($unidade_medida->uni_id)){
+if(!isEmpty($unidade_medida->unid_id)){
  
 if($unidade_medida->update_patch($data)){
     http_response_code(200);

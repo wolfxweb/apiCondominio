@@ -4,7 +4,15 @@ include_once '../config/helper.php';
 include_once '../config/database.php';
 include_once '../objects/unidade_medida.php';
 include_once '../token/validatetoken.php';
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $unidade_medida = new Unidade_Medida($db);
@@ -30,10 +38,11 @@ if($num>0){
  
         $unidade_medida_item=array(
             
-"uni_id" => $uni_id,
-"uni_sigla" => $uni_sigla,
-"uni_nome" => $uni_nome,
-"uni_padrao" => $uni_padrao
+"unid_id" => $unid_id,
+"unid_slug" => $unid_slug,
+"unid_nome" => $unid_nome,
+"usu_email" => html_entity_decode($usu_email),
+"usu_id" => $usu_id
         );
  
         array_push($unidade_medida_arr["records"], $unidade_medida_item);

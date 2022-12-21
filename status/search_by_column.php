@@ -4,7 +4,15 @@ include_once '../config/helper.php';
 include_once '../config/database.php';
 include_once '../objects/status.php';
 include_once '../token/validatetoken.php';
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $status = new Status($db);
@@ -32,7 +40,7 @@ if($num>0){
             
 "sta_id" => $sta_id,
 "sta_sigla" => $sta_sigla,
-"sta_name" => $sta_name
+"sta_nome" => $sta_nome
         );
  
         array_push($status_arr["records"], $status_item);

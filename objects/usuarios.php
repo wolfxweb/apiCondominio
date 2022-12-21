@@ -7,16 +7,14 @@ class Usuarios{
 	public  $no_of_records_per_page=30;
 	
 public $usu_id;
-public $usu_name;
+public $usu_nome;
 public $usu_email;
 public $usu_password;
-public $usu_token_recuperar_senha;
-//public $usut_id;
-public $usun_id;
-public $usus_id;
+public $usu_reset_token;
+public $sta_id;
+public $usut_id;
+public $sta_nome;
 public $usut_nome;
-public $usun_nome;
-public $usus_nome;
     
     public function __construct($db){
         $this->conn = $db;
@@ -31,7 +29,7 @@ public $usus_nome;
 	}
 
 	function search_count($searchKey) {
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE LOWER(t.usu_name) LIKE ? OR LOWER(t.usu_email) LIKE ?  OR LOWER(t.usu_password) LIKE ?  OR LOWER(t.usu_token_recuperar_senha) LIKE ?  OR LOWER(t.usut_id) LIKE ?  OR LOWER(t.usun_id) LIKE ?  OR LOWER(t.usus_id) LIKE ? ";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE LOWER(t.usu_nome) LIKE ? OR LOWER(t.usu_email) LIKE ?  OR LOWER(t.usu_password) LIKE ?  OR LOWER(t.usu_reset_token) LIKE ?  OR LOWER(t.sta_id) LIKE ?  OR LOWER(t.usut_id) LIKE ? ";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -41,7 +39,6 @@ $stmt->bindParam(3, $searchKey);
 $stmt->bindParam(4, $searchKey);
 $stmt->bindParam(5, $searchKey);
 $stmt->bindParam(6, $searchKey);
-$stmt->bindParam(7, $searchKey);
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		return $row['total'];
@@ -61,7 +58,7 @@ $stmt->bindParam(7, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE ".$where."";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE ".$where."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -90,7 +87,7 @@ $stmt->bindParam(7, $searchKey);
 			$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  xxxx.sta_nome, w.usut_nome, t.* FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		return $stmt;
@@ -100,7 +97,7 @@ $stmt->bindParam(7, $searchKey);
 		$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE LOWER(t.usu_name) LIKE ? OR LOWER(t.usu_email) LIKE ?  OR LOWER(t.usu_password) LIKE ?  OR LOWER(t.usu_token_recuperar_senha) LIKE ?  OR LOWER(t.usut_id) LIKE ?  OR LOWER(t.usun_id) LIKE ?  OR LOWER(t.usus_id) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  xxxx.sta_nome, w.usut_nome, t.* FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE LOWER(t.usu_nome) LIKE ? OR LOWER(t.usu_email) LIKE ?  OR LOWER(t.usu_password) LIKE ?  OR LOWER(t.usu_reset_token) LIKE ?  OR LOWER(t.sta_id) LIKE ?  OR LOWER(t.usut_id) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -110,7 +107,6 @@ $stmt->bindParam(3, $searchKey);
 $stmt->bindParam(4, $searchKey);
 $stmt->bindParam(5, $searchKey);
 $stmt->bindParam(6, $searchKey);
-$stmt->bindParam(7, $searchKey);
 		$stmt->execute();
 		return $stmt;
 	}
@@ -132,7 +128,7 @@ $stmt->bindParam(7, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  xxxx.sta_nome, w.usut_nome, t.* FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -152,44 +148,10 @@ $stmt->bindParam(7, $searchKey);
 		return $stmt;
 	}
 	
-	function login_validation(){ 
-$query = "SELECT  usun.usun_nome ,usus.usus_nome,t.* FROM ". $this->table_name ." t ";
-$query .= "  left join usuario_nivel_acesso usun on usun.usun_id = usun.usun_id ";
-$query .="   left join usuario_status usus on t.usus_id = usus.usus_id  ";
-$query .= "  WHERE t.usu_email = ? AND t.usu_password=? LIMIT 0,1";
-$stmt = $this->conn->prepare($query);
-$stmt->bindParam(1, $this->usu_email);
-$stmt->bindParam(2, $this->usu_password);
-$stmt->execute();
-$row = $stmt->fetch(PDO::FETCH_ASSOC);
-$num = $stmt->rowCount();
-if($num>0){
-
-$this->usu_id = $row['usu_id'];
-$this->usu_name = $row['usu_name'];
-$this->usu_email = $row['usu_email'];
-$this->usu_password = $row['usu_password'];
-$this->usu_token_recuperar_senha = $row['usu_token_recuperar_senha'];
-//$this->usut_id = $row['usut_id'];
-$this->usun_id = $row['usun_id'];
-$this->usus_id = $row['usus_id'];
-$this->usun_nome = $row['usun_nome'];
-$this->usus_nome = $row['usus_nome'];
-/*
-
-$this->usun_nome = $row['usun_nome'];
-
-$this->usus_nome = $row['usus_nome'];
-*/
-}
-else{
-$this->usu_id=null;
-}
-}
-
+	
 
 	function readOne(){
-		$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE t.usu_id = ? LIMIT 0,1";
+		$query = "SELECT  xxxx.sta_nome, w.usut_nome, t.* FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE t.usu_id = ? LIMIT 0,1";
 		$stmt = $this->conn->prepare($query);
 		$stmt->bindParam(1, $this->usu_id);
 		$stmt->execute();
@@ -198,55 +160,38 @@ $this->usu_id=null;
 		if($num>0){
 			
 $this->usu_id = $row['usu_id'];
-$this->usu_name = $row['usu_name'];
+$this->usu_nome = $row['usu_nome'];
 $this->usu_email = $row['usu_email'];
 $this->usu_password = $row['usu_password'];
-$this->usu_token_recuperar_senha = $row['usu_token_recuperar_senha'];
-//$this->usut_id = $row['usut_id'];
-//$this->usut_nome = $row['usut_nome'];
-$this->usun_id = $row['usun_id'];
-$this->usun_nome = $row['usun_nome'];
-$this->usus_id = $row['usus_id'];
-$this->usus_nome = $row['usus_nome'];
+$this->usu_reset_token = $row['usu_reset_token'];
+$this->sta_id = $row['sta_id'];
+$this->sta_nome = $row['sta_nome'];
+$this->usut_id = $row['usut_id'];
+$this->usut_nome = $row['usut_nome'];
 		}
 		else{
 			$this->usu_id=null;
 		}
 	}
-	
-	
-function create(){
-	   // return $this->usu_name;
-	  // $query ="INSERT INTO ".$this->table_name." SET usu_name='$this->usu_name',usu_email='$this->usu_email',usu_password='$this->usu_password',usu_token_recuperar_senha='$this->usu_token_recuperar_senha',usun_id=$this->usun_id,usus_id=$this->usus_id";
-
-	 //  return $query;
-	   
-	   
-		$query ="INSERT INTO ".$this->table_name." SET usu_name=:usu_name,usu_email=:usu_email,usu_password=:usu_password,usu_token_recuperar_senha=:usu_token_recuperar_senha,usun_id=:usun_id,usus_id=:usus_id";
+	function create(){
+		$query ="INSERT INTO ".$this->table_name." SET usu_nome=:usu_nome,usu_email=:usu_email,usu_password=:usu_password,usu_reset_token=:usu_reset_token,sta_id=:sta_id,usut_id=:usut_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
-$this->usu_name=htmlspecialchars(strip_tags($this->usu_name));
+$this->usu_nome=htmlspecialchars(strip_tags($this->usu_nome));
 $this->usu_email=htmlspecialchars(strip_tags($this->usu_email));
 $this->usu_password=htmlspecialchars(strip_tags($this->usu_password));
-$this->usu_token_recuperar_senha=htmlspecialchars(strip_tags($this->usu_token_recuperar_senha));
-//$this->usut_id=htmlspecialchars(strip_tags($this->usut_id));
-$this->usun_id=htmlspecialchars(strip_tags($this->usun_id));
-$this->usus_id=htmlspecialchars(strip_tags($this->usus_id));
+$this->usu_reset_token=htmlspecialchars(strip_tags($this->usu_reset_token));
+$this->sta_id=htmlspecialchars(strip_tags($this->sta_id));
+$this->usut_id=htmlspecialchars(strip_tags($this->usut_id));
 		
-//$stmt->bindParam(":usu_id", $this->usu_id);
-$stmt->bindParam(":usu_name", $this->usu_name);
+$stmt->bindParam(":usu_nome", $this->usu_nome);
 $stmt->bindParam(":usu_email", $this->usu_email);
 $stmt->bindParam(":usu_password", $this->usu_password);
-$stmt->bindParam(":usu_token_recuperar_senha", $this->usu_token_recuperar_senha);
-//$stmt->bindParam(":usut_id", $this->usut_id);
-$stmt->bindParam(":usun_id", $this->usun_id);
-$stmt->bindParam(":usus_id", $this->usus_id);
+$stmt->bindParam(":usu_reset_token", $this->usu_reset_token);
+$stmt->bindParam(":sta_id", $this->sta_id);
+$stmt->bindParam(":usut_id", $this->usut_id);
 		$lastInsertedId=0;
-		//return $stmt;
 		if($stmt->execute()){
-			//$lastInsertedId=1;
-			
 			$lastInsertedId = $this->conn->lastInsertId();
 			if($lastInsertedId==0 && $this->usu_id!=null){
 				$this->readOne();
@@ -254,34 +199,28 @@ $stmt->bindParam(":usus_id", $this->usus_id);
 					$lastInsertedId=$this->usu_id;
 					}
 			}
-			
 		}
 	
 		return $lastInsertedId;
-		
-}
+	}
 	function update(){
-		$query ="UPDATE ".$this->table_name." SET usu_id=:usu_id,usu_name=:usu_name,usu_email=:usu_email,usu_password=:usu_password,usu_token_recuperar_senha=:usu_token_recuperar_senha,usut_id=:usut_id,usun_id=:usun_id,usus_id=:usus_id WHERE usu_id = :usu_id";
+		$query ="UPDATE ".$this->table_name." SET usu_nome=:usu_nome,usu_email=:usu_email,usu_password=:usu_password,usu_reset_token=:usu_reset_token,sta_id=:sta_id,usut_id=:usut_id WHERE usu_id = :usu_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
-$this->usu_name=htmlspecialchars(strip_tags($this->usu_name));
+$this->usu_nome=htmlspecialchars(strip_tags($this->usu_nome));
 $this->usu_email=htmlspecialchars(strip_tags($this->usu_email));
 $this->usu_password=htmlspecialchars(strip_tags($this->usu_password));
-$this->usu_token_recuperar_senha=htmlspecialchars(strip_tags($this->usu_token_recuperar_senha));
+$this->usu_reset_token=htmlspecialchars(strip_tags($this->usu_reset_token));
+$this->sta_id=htmlspecialchars(strip_tags($this->sta_id));
 $this->usut_id=htmlspecialchars(strip_tags($this->usut_id));
-$this->usun_id=htmlspecialchars(strip_tags($this->usun_id));
-$this->usus_id=htmlspecialchars(strip_tags($this->usus_id));
 $this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
 		
-$stmt->bindParam(":usu_id", $this->usu_id);
-$stmt->bindParam(":usu_name", $this->usu_name);
+$stmt->bindParam(":usu_nome", $this->usu_nome);
 $stmt->bindParam(":usu_email", $this->usu_email);
 $stmt->bindParam(":usu_password", $this->usu_password);
-$stmt->bindParam(":usu_token_recuperar_senha", $this->usu_token_recuperar_senha);
+$stmt->bindParam(":usu_reset_token", $this->usu_reset_token);
+$stmt->bindParam(":sta_id", $this->sta_id);
 $stmt->bindParam(":usut_id", $this->usut_id);
-$stmt->bindParam(":usun_id", $this->usun_id);
-$stmt->bindParam(":usus_id", $this->usus_id);
 $stmt->bindParam(":usu_id", $this->usu_id);
 		$stmt->execute();
 
@@ -345,46 +284,31 @@ $stmt->bindParam(":usu_id", $this->usu_id);
 	}
 
 	
+function readBysta_id(){
+
+if (isset($_GET["pageNo"]))
+{
+$this->pageNo =$_GET["pageNo"]; } 
+$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
+$query = "SELECT  xxxx.sta_nome, w.usut_nome, t.* FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE t.sta_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+
+$stmt = $this->conn->prepare( $query );
+$stmt->bindParam(1, $this->sta_id);
+
+$stmt->execute();
+return $stmt;
+}
+
 function readByusut_id(){
 
 if (isset($_GET["pageNo"]))
 {
 $this->pageNo =$_GET["pageNo"]; } 
 $offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE t.usut_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+$query = "SELECT  xxxx.sta_nome, w.usut_nome, t.* FROM ". $this->table_name ." t  left join status xxxx on t.sta_id = xxxx.sta_id  left join usuario_tipo w on t.usut_id = w.usut_id  WHERE t.usut_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 
 $stmt = $this->conn->prepare( $query );
 $stmt->bindParam(1, $this->usut_id);
-
-$stmt->execute();
-return $stmt;
-}
-
-function readByusun_id(){
-
-if (isset($_GET["pageNo"]))
-{
-$this->pageNo =$_GET["pageNo"]; } 
-$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE t.usun_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
-
-$stmt = $this->conn->prepare( $query );
-$stmt->bindParam(1, $this->usun_id);
-
-$stmt->execute();
-return $stmt;
-}
-
-function readByusus_id(){
-
-if (isset($_GET["pageNo"]))
-{
-$this->pageNo =$_GET["pageNo"]; } 
-$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  p.usut_nome, lll.usun_nome, www.usus_nome, t.* FROM ". $this->table_name ." t  left join usuario_tipo p on t.usut_id = p.usut_id  left join usuario_nivel_acesso lll on t.usun_id = lll.usun_id  left join usuario_status www on t.usus_id = www.usus_id  WHERE t.usus_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
-
-$stmt = $this->conn->prepare( $query );
-$stmt->bindParam(1, $this->usus_id);
 
 $stmt->execute();
 return $stmt;

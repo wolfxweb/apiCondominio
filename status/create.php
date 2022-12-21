@@ -5,20 +5,28 @@ include_once '../config/database.php';
 include_once '../objects/status.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
  
 $status = new Status($db);
 $data = json_decode(file_get_contents("php://input"));
 
-if(!isEmpty($data->sta_name)){
+if(!isEmpty($data->sta_nome)){
 	
     
 $status->sta_sigla = $data->sta_sigla;
-if(!isEmpty($data->sta_name)) { 
-$status->sta_name = $data->sta_name;
+if(!isEmpty($data->sta_nome)) { 
+$status->sta_nome = $data->sta_nome;
 } else { 
-$status->sta_name = '';
+$status->sta_nome = '';
 }
  	$lastInsertedId=$status->create();
     if($lastInsertedId!=0){

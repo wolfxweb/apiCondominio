@@ -5,13 +5,21 @@ include_once '../config/database.php';
 include_once '../objects/produto.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $produto = new Produto($db);
 
 $data = json_decode(file_get_contents("php://input"));
-$produto->prod_id = $data->prod_id;
+$produto->pro_id = $data->pro_id;
 
 if(!isEmpty($data->prod_nome)){
 
@@ -20,12 +28,11 @@ $produto->prod_nome = $data->prod_nome;
 } else { 
 $produto->prod_nome = '';
 }
+$produto->prod_descricao = $data->prod_descricao;
 $produto->prod_preco = $data->prod_preco;
+$produto->unid_id = $data->unid_id;
 $produto->cat_id = $data->cat_id;
-$produto->uni_id = $data->uni_id;
-$produto->mar_id = $data->mar_id;
-$produto->itep_id = $data->itep_id;
-$produto->pro_url_img = $data->pro_url_img;
+$produto->usu_id = $data->usu_id;
 if($produto->update()){
     http_response_code(200);
 	echo json_encode(array("status" => "success", "code" => 1,"message"=> "Updated Successfully","document"=> ""));

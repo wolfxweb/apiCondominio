@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/produto.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $produto = new Produto($db);
@@ -28,17 +36,15 @@ if($num>0){
         extract($row);
         $produto_item=array(
             
-"prod_id" => $prod_id,
+"pro_id" => $pro_id,
 "prod_nome" => $prod_nome,
+"prod_descricao" => html_entity_decode($prod_descricao),
 "prod_preco" => $prod_preco,
+"unid_id" => $unid_id,
 "cat_nome" => html_entity_decode($cat_nome),
 "cat_id" => $cat_id,
-"uni_sigla" => $uni_sigla,
-"uni_id" => $uni_id,
-"mar_nome" => html_entity_decode($mar_nome),
-"mar_id" => $mar_id,
-"itep_id" => $itep_id,
-"pro_url_img" => $pro_url_img
+"usu_email" => html_entity_decode($usu_email),
+"usu_id" => $usu_id
         );
         array_push($produto_arr["records"], $produto_item);
     }

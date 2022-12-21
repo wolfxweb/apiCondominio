@@ -5,14 +5,22 @@ include_once '../config/database.php';
 include_once '../objects/produto.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $produto = new Produto($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-$produto->prod_id = $data->prod_id;
+$produto->pro_id = $data->pro_id;
 
 
 if($produto->delete()){

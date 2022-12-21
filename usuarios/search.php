@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/usuarios.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $usuarios = new Usuarios($db);
@@ -29,15 +37,13 @@ if($num>0){
         $usuarios_item=array(
             
 "usu_id" => $usu_id,
-"usu_name" => $usu_name,
+"usu_nome" => $usu_nome,
 "usu_email" => html_entity_decode($usu_email),
 "usu_password" => $usu_password,
-"usu_token_recuperar_senha" => $usu_token_recuperar_senha,
-"usut_id" => $usut_id,
-"usun_nome" => $usun_nome,
-"usun_id" => $usun_id,
-"usus_nome" => $usus_nome,
-"usus_id" => $usus_id
+"usu_reset_token" => $usu_reset_token,
+"sta_nome" => $sta_nome,
+"sta_id" => $sta_id,
+"usut_id" => $usut_id
         );
         array_push($usuarios_arr["records"], $usuarios_item);
     }

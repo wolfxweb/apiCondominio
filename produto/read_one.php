@@ -5,28 +5,34 @@ include_once '../config/database.php';
 include_once '../objects/produto.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $produto = new Produto($db);
 
-$produto->prod_id = isset($_GET['id']) ? $_GET['id'] : die();
+$produto->pro_id = isset($_GET['id']) ? $_GET['id'] : die();
 $produto->readOne();
  
-if($produto->prod_id!=null){
+if($produto->pro_id!=null){
     $produto_arr = array(
         
-"prod_id" => $produto->prod_id,
+"pro_id" => $produto->pro_id,
 "prod_nome" => $produto->prod_nome,
+"prod_descricao" => html_entity_decode($produto->prod_descricao),
 "prod_preco" => $produto->prod_preco,
+"unid_id" => $produto->unid_id,
 "cat_nome" => html_entity_decode($produto->cat_nome),
 "cat_id" => $produto->cat_id,
-"uni_sigla" => $produto->uni_sigla,
-"uni_id" => $produto->uni_id,
-"mar_nome" => html_entity_decode($produto->mar_nome),
-"mar_id" => $produto->mar_id,
-"itep_id" => $produto->itep_id,
-"pro_url_img" => $produto->pro_url_img
+"usu_email" => html_entity_decode($produto->usu_email),
+"usu_id" => $produto->usu_id
     );
     http_response_code(200);
    echo json_encode(array("status" => "success", "code" => 1,"message"=> "produto found","document"=> $produto_arr));

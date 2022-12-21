@@ -10,7 +10,8 @@ public $cat_id;
 public $cat_nome;
 public $cat_descricao;
 public $cat_padrao;
-public $cat_img_url;
+public $usu_id;
+public $usu_email;
     
     public function __construct($db){
         $this->conn = $db;
@@ -25,7 +26,7 @@ public $cat_img_url;
 	}
 
 	function search_count($searchKey) {
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE LOWER(t.cat_nome) LIKE ? OR LOWER(t.cat_descricao) LIKE ?  OR LOWER(t.cat_padrao) LIKE ?  OR LOWER(t.cat_img_url) LIKE ? ";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  WHERE LOWER(t.cat_nome) LIKE ? OR LOWER(t.cat_descricao) LIKE ?  OR LOWER(t.cat_padrao) LIKE ?  OR LOWER(t.usu_id) LIKE ? ";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -52,7 +53,7 @@ $stmt->bindParam(4, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE ".$where."";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  WHERE ".$where."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -81,7 +82,7 @@ $stmt->bindParam(4, $searchKey);
 			$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  qqq.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		return $stmt;
@@ -91,7 +92,7 @@ $stmt->bindParam(4, $searchKey);
 		$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE LOWER(t.cat_nome) LIKE ? OR LOWER(t.cat_descricao) LIKE ?  OR LOWER(t.cat_padrao) LIKE ?  OR LOWER(t.cat_img_url) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  qqq.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  WHERE LOWER(t.cat_nome) LIKE ? OR LOWER(t.cat_descricao) LIKE ?  OR LOWER(t.cat_padrao) LIKE ?  OR LOWER(t.usu_id) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -120,7 +121,7 @@ $stmt->bindParam(4, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  qqq.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -143,7 +144,7 @@ $stmt->bindParam(4, $searchKey);
 	
 
 	function readOne(){
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE t.cat_id = ? LIMIT 0,1";
+		$query = "SELECT  qqq.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  WHERE t.cat_id = ? LIMIT 0,1";
 		$stmt = $this->conn->prepare($query);
 		$stmt->bindParam(1, $this->cat_id);
 		$stmt->execute();
@@ -155,27 +156,26 @@ $this->cat_id = $row['cat_id'];
 $this->cat_nome = $row['cat_nome'];
 $this->cat_descricao = $row['cat_descricao'];
 $this->cat_padrao = $row['cat_padrao'];
-$this->cat_img_url = $row['cat_img_url'];
+$this->usu_id = $row['usu_id'];
+$this->usu_email = $row['usu_email'];
 		}
 		else{
 			$this->cat_id=null;
 		}
 	}
 	function create(){
-		$query ="INSERT INTO ".$this->table_name." SET cat_id=:cat_id,cat_nome=:cat_nome,cat_descricao=:cat_descricao,cat_padrao=:cat_padrao,cat_img_url=:cat_img_url";
+		$query ="INSERT INTO ".$this->table_name." SET cat_nome=:cat_nome,cat_descricao=:cat_descricao,cat_padrao=:cat_padrao,usu_id=:usu_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->cat_id=htmlspecialchars(strip_tags($this->cat_id));
 $this->cat_nome=htmlspecialchars(strip_tags($this->cat_nome));
 $this->cat_descricao=htmlspecialchars(strip_tags($this->cat_descricao));
 $this->cat_padrao=htmlspecialchars(strip_tags($this->cat_padrao));
-$this->cat_img_url=htmlspecialchars(strip_tags($this->cat_img_url));
+$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
 		
-$stmt->bindParam(":cat_id", $this->cat_id);
 $stmt->bindParam(":cat_nome", $this->cat_nome);
 $stmt->bindParam(":cat_descricao", $this->cat_descricao);
 $stmt->bindParam(":cat_padrao", $this->cat_padrao);
-$stmt->bindParam(":cat_img_url", $this->cat_img_url);
+$stmt->bindParam(":usu_id", $this->usu_id);
 		$lastInsertedId=0;
 		if($stmt->execute()){
 			$lastInsertedId = $this->conn->lastInsertId();
@@ -190,21 +190,19 @@ $stmt->bindParam(":cat_img_url", $this->cat_img_url);
 		return $lastInsertedId;
 	}
 	function update(){
-		$query ="UPDATE ".$this->table_name." SET cat_id=:cat_id,cat_nome=:cat_nome,cat_descricao=:cat_descricao,cat_padrao=:cat_padrao,cat_img_url=:cat_img_url WHERE cat_id = :cat_id";
+		$query ="UPDATE ".$this->table_name." SET cat_nome=:cat_nome,cat_descricao=:cat_descricao,cat_padrao=:cat_padrao,usu_id=:usu_id WHERE cat_id = :cat_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->cat_id=htmlspecialchars(strip_tags($this->cat_id));
 $this->cat_nome=htmlspecialchars(strip_tags($this->cat_nome));
 $this->cat_descricao=htmlspecialchars(strip_tags($this->cat_descricao));
 $this->cat_padrao=htmlspecialchars(strip_tags($this->cat_padrao));
-$this->cat_img_url=htmlspecialchars(strip_tags($this->cat_img_url));
+$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
 $this->cat_id=htmlspecialchars(strip_tags($this->cat_id));
 		
-$stmt->bindParam(":cat_id", $this->cat_id);
 $stmt->bindParam(":cat_nome", $this->cat_nome);
 $stmt->bindParam(":cat_descricao", $this->cat_descricao);
 $stmt->bindParam(":cat_padrao", $this->cat_padrao);
-$stmt->bindParam(":cat_img_url", $this->cat_img_url);
+$stmt->bindParam(":usu_id", $this->usu_id);
 $stmt->bindParam(":cat_id", $this->cat_id);
 		$stmt->execute();
 
@@ -268,5 +266,20 @@ $stmt->bindParam(":cat_id", $this->cat_id);
 	}
 
 	
+function readByusu_id(){
+
+if (isset($_GET["pageNo"]))
+{
+$this->pageNo =$_GET["pageNo"]; } 
+$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
+$query = "SELECT  qqq.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios qqq on t.usu_id = qqq.usu_id  WHERE t.usu_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+
+$stmt = $this->conn->prepare( $query );
+$stmt->bindParam(1, $this->usu_id);
+
+$stmt->execute();
+return $stmt;
+}
+
 }
 ?>

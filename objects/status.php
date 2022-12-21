@@ -8,7 +8,7 @@ class Status{
 	
 public $sta_id;
 public $sta_sigla;
-public $sta_name;
+public $sta_nome;
     
     public function __construct($db){
         $this->conn = $db;
@@ -23,7 +23,7 @@ public $sta_name;
 	}
 
 	function search_count($searchKey) {
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE LOWER(t.sta_sigla) LIKE ? OR LOWER(t.sta_name) LIKE ? ";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE LOWER(t.sta_sigla) LIKE ? OR LOWER(t.sta_nome) LIKE ? ";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -87,7 +87,7 @@ $stmt->bindParam(2, $searchKey);
 		$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE LOWER(t.sta_sigla) LIKE ? OR LOWER(t.sta_name) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE LOWER(t.sta_sigla) LIKE ? OR LOWER(t.sta_nome) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -147,21 +147,21 @@ $stmt->bindParam(2, $searchKey);
 			
 $this->sta_id = $row['sta_id'];
 $this->sta_sigla = $row['sta_sigla'];
-$this->sta_name = $row['sta_name'];
+$this->sta_nome = $row['sta_nome'];
 		}
 		else{
 			$this->sta_id=null;
 		}
 	}
 	function create(){
-		$query ="INSERT INTO ".$this->table_name." SET sta_sigla=:sta_sigla,sta_name=:sta_name";
+		$query ="INSERT INTO ".$this->table_name." SET sta_sigla=:sta_sigla,sta_nome=:sta_nome";
 		$stmt = $this->conn->prepare($query);
 		
 $this->sta_sigla=htmlspecialchars(strip_tags($this->sta_sigla));
-$this->sta_name=htmlspecialchars(strip_tags($this->sta_name));
+$this->sta_nome=htmlspecialchars(strip_tags($this->sta_nome));
 		
 $stmt->bindParam(":sta_sigla", $this->sta_sigla);
-$stmt->bindParam(":sta_name", $this->sta_name);
+$stmt->bindParam(":sta_nome", $this->sta_nome);
 		$lastInsertedId=0;
 		if($stmt->execute()){
 			$lastInsertedId = $this->conn->lastInsertId();
@@ -176,15 +176,15 @@ $stmt->bindParam(":sta_name", $this->sta_name);
 		return $lastInsertedId;
 	}
 	function update(){
-		$query ="UPDATE ".$this->table_name." SET sta_sigla=:sta_sigla,sta_name=:sta_name WHERE sta_id = :sta_id";
+		$query ="UPDATE ".$this->table_name." SET sta_sigla=:sta_sigla,sta_nome=:sta_nome WHERE sta_id = :sta_id";
 		$stmt = $this->conn->prepare($query);
 		
 $this->sta_sigla=htmlspecialchars(strip_tags($this->sta_sigla));
-$this->sta_name=htmlspecialchars(strip_tags($this->sta_name));
+$this->sta_nome=htmlspecialchars(strip_tags($this->sta_nome));
 $this->sta_id=htmlspecialchars(strip_tags($this->sta_id));
 		
 $stmt->bindParam(":sta_sigla", $this->sta_sigla);
-$stmt->bindParam(":sta_name", $this->sta_name);
+$stmt->bindParam(":sta_nome", $this->sta_nome);
 $stmt->bindParam(":sta_id", $this->sta_id);
 		$stmt->execute();
 

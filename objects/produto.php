@@ -6,18 +6,16 @@ class Produto{
 	public $pageNo = 1;
 	public  $no_of_records_per_page=30;
 	
-public $prod_id;
+public $pro_id;
 public $prod_nome;
+public $prod_descricao;
 public $prod_preco;
+public $unid_id;
 public $cat_id;
-public $uni_id;
-public $mar_id;
-public $itep_id;
-public $pro_url_img;
+public $usu_id;
+public $unid_slug;
 public $cat_nome;
-public $uni_sigla;
-public $mar_nome;
-public $ped_id;
+public $usu_email;
     
     public function __construct($db){
         $this->conn = $db;
@@ -32,7 +30,7 @@ public $ped_id;
 	}
 
 	function search_count($searchKey) {
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE LOWER(t.prod_nome) LIKE ? OR LOWER(t.prod_preco) LIKE ?  OR LOWER(t.cat_id) LIKE ?  OR LOWER(t.uni_id) LIKE ?  OR LOWER(t.mar_id) LIKE ?  OR LOWER(t.itep_id) LIKE ?  OR LOWER(t.pro_url_img) LIKE ? ";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE LOWER(t.prod_nome) LIKE ? OR LOWER(t.prod_descricao) LIKE ?  OR LOWER(t.prod_preco) LIKE ?  OR LOWER(t.unid_id) LIKE ?  OR LOWER(t.cat_id) LIKE ?  OR LOWER(t.usu_id) LIKE ? ";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -42,7 +40,6 @@ $stmt->bindParam(3, $searchKey);
 $stmt->bindParam(4, $searchKey);
 $stmt->bindParam(5, $searchKey);
 $stmt->bindParam(6, $searchKey);
-$stmt->bindParam(7, $searchKey);
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		return $row['total'];
@@ -62,7 +59,7 @@ $stmt->bindParam(7, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE ".$where."";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE ".$where."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -91,7 +88,7 @@ $stmt->bindParam(7, $searchKey);
 			$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		return $stmt;
@@ -101,7 +98,7 @@ $stmt->bindParam(7, $searchKey);
 		$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE LOWER(t.prod_nome) LIKE ? OR LOWER(t.prod_preco) LIKE ?  OR LOWER(t.cat_id) LIKE ?  OR LOWER(t.uni_id) LIKE ?  OR LOWER(t.mar_id) LIKE ?  OR LOWER(t.itep_id) LIKE ?  OR LOWER(t.pro_url_img) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE LOWER(t.prod_nome) LIKE ? OR LOWER(t.prod_descricao) LIKE ?  OR LOWER(t.prod_preco) LIKE ?  OR LOWER(t.unid_id) LIKE ?  OR LOWER(t.cat_id) LIKE ?  OR LOWER(t.usu_id) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -111,7 +108,6 @@ $stmt->bindParam(3, $searchKey);
 $stmt->bindParam(4, $searchKey);
 $stmt->bindParam(5, $searchKey);
 $stmt->bindParam(6, $searchKey);
-$stmt->bindParam(7, $searchKey);
 		$stmt->execute();
 		return $stmt;
 	}
@@ -133,7 +129,7 @@ $stmt->bindParam(7, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -156,57 +152,53 @@ $stmt->bindParam(7, $searchKey);
 	
 
 	function readOne(){
-		$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE t.prod_id = ? LIMIT 0,1";
+		$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE t.pro_id = ? LIMIT 0,1";
 		$stmt = $this->conn->prepare($query);
-		$stmt->bindParam(1, $this->prod_id);
+		$stmt->bindParam(1, $this->pro_id);
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$num = $stmt->rowCount();
 		if($num>0){
 			
-$this->prod_id = $row['prod_id'];
+$this->pro_id = $row['pro_id'];
 $this->prod_nome = $row['prod_nome'];
+$this->prod_descricao = $row['prod_descricao'];
 $this->prod_preco = $row['prod_preco'];
+$this->unid_id = $row['unid_id'];
+$this->unid_slug = $row['unid_slug'];
 $this->cat_id = $row['cat_id'];
 $this->cat_nome = $row['cat_nome'];
-$this->uni_id = $row['uni_id'];
-$this->uni_sigla = $row['uni_sigla'];
-$this->mar_id = $row['mar_id'];
-$this->mar_nome = $row['mar_nome'];
-$this->itep_id = $row['itep_id'];
-$this->ped_id = $row['ped_id'];
-$this->pro_url_img = $row['pro_url_img'];
+$this->usu_id = $row['usu_id'];
+$this->usu_email = $row['usu_email'];
 		}
 		else{
-			$this->prod_id=null;
+			$this->pro_id=null;
 		}
 	}
 	function create(){
-		$query ="INSERT INTO ".$this->table_name." SET prod_nome=:prod_nome,prod_preco=:prod_preco,cat_id=:cat_id,uni_id=:uni_id,mar_id=:mar_id,itep_id=:itep_id,pro_url_img=:pro_url_img";
+		$query ="INSERT INTO ".$this->table_name." SET prod_nome=:prod_nome,prod_descricao=:prod_descricao,prod_preco=:prod_preco,unid_id=:unid_id,cat_id=:cat_id,usu_id=:usu_id";
 		$stmt = $this->conn->prepare($query);
 		
 $this->prod_nome=htmlspecialchars(strip_tags($this->prod_nome));
+$this->prod_descricao=htmlspecialchars(strip_tags($this->prod_descricao));
 $this->prod_preco=htmlspecialchars(strip_tags($this->prod_preco));
+$this->unid_id=htmlspecialchars(strip_tags($this->unid_id));
 $this->cat_id=htmlspecialchars(strip_tags($this->cat_id));
-$this->uni_id=htmlspecialchars(strip_tags($this->uni_id));
-$this->mar_id=htmlspecialchars(strip_tags($this->mar_id));
-$this->itep_id=htmlspecialchars(strip_tags($this->itep_id));
-$this->pro_url_img=htmlspecialchars(strip_tags($this->pro_url_img));
+$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
 		
 $stmt->bindParam(":prod_nome", $this->prod_nome);
+$stmt->bindParam(":prod_descricao", $this->prod_descricao);
 $stmt->bindParam(":prod_preco", $this->prod_preco);
+$stmt->bindParam(":unid_id", $this->unid_id);
 $stmt->bindParam(":cat_id", $this->cat_id);
-$stmt->bindParam(":uni_id", $this->uni_id);
-$stmt->bindParam(":mar_id", $this->mar_id);
-$stmt->bindParam(":itep_id", $this->itep_id);
-$stmt->bindParam(":pro_url_img", $this->pro_url_img);
+$stmt->bindParam(":usu_id", $this->usu_id);
 		$lastInsertedId=0;
 		if($stmt->execute()){
 			$lastInsertedId = $this->conn->lastInsertId();
-			if($lastInsertedId==0 && $this->prod_id!=null){
+			if($lastInsertedId==0 && $this->pro_id!=null){
 				$this->readOne();
-				if($this->prod_id!=null){
-					$lastInsertedId=$this->prod_id;
+				if($this->pro_id!=null){
+					$lastInsertedId=$this->pro_id;
 					}
 			}
 		}
@@ -214,26 +206,24 @@ $stmt->bindParam(":pro_url_img", $this->pro_url_img);
 		return $lastInsertedId;
 	}
 	function update(){
-		$query ="UPDATE ".$this->table_name." SET prod_nome=:prod_nome,prod_preco=:prod_preco,cat_id=:cat_id,uni_id=:uni_id,mar_id=:mar_id,itep_id=:itep_id,pro_url_img=:pro_url_img WHERE prod_id = :prod_id";
+		$query ="UPDATE ".$this->table_name." SET prod_nome=:prod_nome,prod_descricao=:prod_descricao,prod_preco=:prod_preco,unid_id=:unid_id,cat_id=:cat_id,usu_id=:usu_id WHERE pro_id = :pro_id";
 		$stmt = $this->conn->prepare($query);
 		
 $this->prod_nome=htmlspecialchars(strip_tags($this->prod_nome));
+$this->prod_descricao=htmlspecialchars(strip_tags($this->prod_descricao));
 $this->prod_preco=htmlspecialchars(strip_tags($this->prod_preco));
+$this->unid_id=htmlspecialchars(strip_tags($this->unid_id));
 $this->cat_id=htmlspecialchars(strip_tags($this->cat_id));
-$this->uni_id=htmlspecialchars(strip_tags($this->uni_id));
-$this->mar_id=htmlspecialchars(strip_tags($this->mar_id));
-$this->itep_id=htmlspecialchars(strip_tags($this->itep_id));
-$this->pro_url_img=htmlspecialchars(strip_tags($this->pro_url_img));
-$this->prod_id=htmlspecialchars(strip_tags($this->prod_id));
+$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
+$this->pro_id=htmlspecialchars(strip_tags($this->pro_id));
 		
 $stmt->bindParam(":prod_nome", $this->prod_nome);
+$stmt->bindParam(":prod_descricao", $this->prod_descricao);
 $stmt->bindParam(":prod_preco", $this->prod_preco);
+$stmt->bindParam(":unid_id", $this->unid_id);
 $stmt->bindParam(":cat_id", $this->cat_id);
-$stmt->bindParam(":uni_id", $this->uni_id);
-$stmt->bindParam(":mar_id", $this->mar_id);
-$stmt->bindParam(":itep_id", $this->itep_id);
-$stmt->bindParam(":pro_url_img", $this->pro_url_img);
-$stmt->bindParam(":prod_id", $this->prod_id);
+$stmt->bindParam(":usu_id", $this->usu_id);
+$stmt->bindParam(":pro_id", $this->pro_id);
 		$stmt->execute();
 
 	 if($stmt->rowCount()) {
@@ -249,7 +239,7 @@ $stmt->bindParam(":prod_id", $this->prod_id);
 			foreach($jsonObj as $key => $value) 
 			{
 				$columnName=htmlspecialchars(strip_tags($key));
-				if($columnName!='prod_id'){
+				if($columnName!='pro_id'){
 				if($colCount===1){
 					$setValue = $columnName."=:".$columnName;
 				}else{
@@ -259,17 +249,17 @@ $stmt->bindParam(":prod_id", $this->prod_id);
 				}
 			}
 			$setValue = rtrim($setValue,',');
-			$query = $query . " " . $setValue . " WHERE prod_id = :prod_id"; 
+			$query = $query . " " . $setValue . " WHERE pro_id = :pro_id"; 
 			$stmt = $this->conn->prepare($query);
 			foreach($jsonObj as $key => $value) 
 			{
 			    $columnName=htmlspecialchars(strip_tags($key));
-				if($columnName!='prod_id'){
+				if($columnName!='pro_id'){
 				$colValue=htmlspecialchars(strip_tags($value));
 				$stmt->bindValue(":".$columnName, $colValue);
 				}
 			}
-			$stmt->bindParam(":prod_id", $this->prod_id);
+			$stmt->bindParam(":pro_id", $this->pro_id);
 			$stmt->execute();
 
 			if($stmt->rowCount()) {
@@ -279,11 +269,11 @@ $stmt->bindParam(":prod_id", $this->prod_id);
 			}
 	}
 	function delete(){
-		$query = "DELETE FROM " . $this->table_name . " WHERE prod_id = ? ";
+		$query = "DELETE FROM " . $this->table_name . " WHERE pro_id = ? ";
 		$stmt = $this->conn->prepare($query);
-		$this->prod_id=htmlspecialchars(strip_tags($this->prod_id));
+		$this->pro_id=htmlspecialchars(strip_tags($this->pro_id));
 
-		$stmt->bindParam(1, $this->prod_id);
+		$stmt->bindParam(1, $this->pro_id);
 
 	 	$stmt->execute();
 
@@ -296,13 +286,28 @@ $stmt->bindParam(":prod_id", $this->prod_id);
 	}
 
 	
+function readByunid_id(){
+
+if (isset($_GET["pageNo"]))
+{
+$this->pageNo =$_GET["pageNo"]; } 
+$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
+$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE t.unid_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+
+$stmt = $this->conn->prepare( $query );
+$stmt->bindParam(1, $this->unid_id);
+
+$stmt->execute();
+return $stmt;
+}
+
 function readBycat_id(){
 
 if (isset($_GET["pageNo"]))
 {
 $this->pageNo =$_GET["pageNo"]; } 
 $offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE t.cat_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE t.cat_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 
 $stmt = $this->conn->prepare( $query );
 $stmt->bindParam(1, $this->cat_id);
@@ -311,46 +316,16 @@ $stmt->execute();
 return $stmt;
 }
 
-function readByuni_id(){
+function readByusu_id(){
 
 if (isset($_GET["pageNo"]))
 {
 $this->pageNo =$_GET["pageNo"]; } 
 $offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE t.uni_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+$query = "SELECT  a.unid_slug, jjj.cat_nome, m.usu_email, t.* FROM ". $this->table_name ." t  left join unidade_medida a on t.unid_id = a.unid_id  left join categorias jjj on t.cat_id = jjj.cat_id  left join usuarios m on t.usu_id = m.usu_id  WHERE t.usu_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 
 $stmt = $this->conn->prepare( $query );
-$stmt->bindParam(1, $this->uni_id);
-
-$stmt->execute();
-return $stmt;
-}
-
-function readBymar_id(){
-
-if (isset($_GET["pageNo"]))
-{
-$this->pageNo =$_GET["pageNo"]; } 
-$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE t.mar_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
-
-$stmt = $this->conn->prepare( $query );
-$stmt->bindParam(1, $this->mar_id);
-
-$stmt->execute();
-return $stmt;
-}
-
-function readByitep_id(){
-
-if (isset($_GET["pageNo"]))
-{
-$this->pageNo =$_GET["pageNo"]; } 
-$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
-$query = "SELECT  eeee.cat_nome, jjjj.uni_sigla, jj.mar_nome, r.ped_id, t.* FROM ". $this->table_name ." t  left join categorias eeee on t.cat_id = eeee.cat_id  left join unidade_medida jjjj on t.uni_id = jjjj.uni_id  left join marca jj on t.mar_id = jj.mar_id  left join itens_pedido r on t.itep_id = r.itep_id  WHERE t.itep_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
-
-$stmt = $this->conn->prepare( $query );
-$stmt->bindParam(1, $this->itep_id);
+$stmt->bindParam(1, $this->usu_id);
 
 $stmt->execute();
 return $stmt;

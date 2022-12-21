@@ -5,22 +5,25 @@ include_once '../config/database.php';
 include_once '../objects/usuario_tipo.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
  
 $usuario_tipo = new Usuario_Tipo($db);
 $data = json_decode(file_get_contents("php://input"));
 
-if(!isEmpty($data->usut_id)){
+if(true){
 	
     
-if(!isEmpty($data->usut_id)) { 
-$usuario_tipo->usut_id = $data->usut_id;
-} else { 
-$usuario_tipo->usut_id = '';
-}
 $usuario_tipo->usut_nome = $data->usut_nome;
-$usuario_tipo->usut_siglar = $data->usut_siglar;
+$usuario_tipo->usut_sigla = $data->usut_sigla;
  	$lastInsertedId=$usuario_tipo->create();
     if($lastInsertedId!=0){
         http_response_code(201);

@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/usuarios.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $usuarios = new Usuarios($db);
@@ -13,16 +21,10 @@ $usuarios = new Usuarios($db);
 $data = json_decode(file_get_contents("php://input"));
 $usuarios->usu_id = $data->usu_id;
 
-if(!isEmpty($data->usu_id)
-&&!isEmpty($data->usu_email)
+if(!isEmpty($data->usu_email)
 &&!isEmpty($data->usu_password)){
 
-if(!isEmpty($data->usu_id)) { 
-$usuarios->usu_id = $data->usu_id;
-} else { 
-$usuarios->usu_id = '';
-}
-$usuarios->usu_name = $data->usu_name;
+$usuarios->usu_nome = $data->usu_nome;
 if(!isEmpty($data->usu_email)) { 
 $usuarios->usu_email = $data->usu_email;
 } else { 
@@ -33,10 +35,9 @@ $usuarios->usu_password = $data->usu_password;
 } else { 
 $usuarios->usu_password = '';
 }
-$usuarios->usu_token_recuperar_senha = $data->usu_token_recuperar_senha;
+$usuarios->usu_reset_token = $data->usu_reset_token;
+$usuarios->sta_id = $data->sta_id;
 $usuarios->usut_id = $data->usut_id;
-$usuarios->usun_id = $data->usun_id;
-$usuarios->usus_id = $data->usus_id;
 if($usuarios->update()){
     http_response_code(200);
 	echo json_encode(array("status" => "success", "code" => 1,"message"=> "Updated Successfully","document"=> ""));

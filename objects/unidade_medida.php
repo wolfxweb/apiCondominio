@@ -6,10 +6,11 @@ class Unidade_Medida{
 	public $pageNo = 1;
 	public  $no_of_records_per_page=30;
 	
-public $uni_id;
-public $uni_sigla;
-public $uni_nome;
-public $uni_padrao;
+public $unid_id;
+public $unid_slug;
+public $unid_nome;
+public $usu_id;
+public $usu_email;
     
     public function __construct($db){
         $this->conn = $db;
@@ -24,7 +25,7 @@ public $uni_padrao;
 	}
 
 	function search_count($searchKey) {
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE LOWER(t.uni_sigla) LIKE ? OR LOWER(t.uni_nome) LIKE ?  OR LOWER(t.uni_padrao) LIKE ? ";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  WHERE LOWER(t.unid_slug) LIKE ? OR LOWER(t.unid_nome) LIKE ?  OR LOWER(t.usu_id) LIKE ? ";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -50,7 +51,7 @@ $stmt->bindParam(3, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE ".$where."";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  WHERE ".$where."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -79,7 +80,7 @@ $stmt->bindParam(3, $searchKey);
 			$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  aaaa.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		return $stmt;
@@ -89,7 +90,7 @@ $stmt->bindParam(3, $searchKey);
 		$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE LOWER(t.uni_sigla) LIKE ? OR LOWER(t.uni_nome) LIKE ?  OR LOWER(t.uni_padrao) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  aaaa.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  WHERE LOWER(t.unid_slug) LIKE ? OR LOWER(t.unid_nome) LIKE ?  OR LOWER(t.usu_id) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -117,7 +118,7 @@ $stmt->bindParam(3, $searchKey);
 			}
 			 $paramCount++;
 		}
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  aaaa.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  WHERE ".$where." LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		
 		$stmt = $this->conn->prepare($query);
 		$paramCount=1;
@@ -140,43 +141,42 @@ $stmt->bindParam(3, $searchKey);
 	
 
 	function readOne(){
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE t.uni_id = ? LIMIT 0,1";
+		$query = "SELECT  aaaa.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  WHERE t.unid_id = ? LIMIT 0,1";
 		$stmt = $this->conn->prepare($query);
-		$stmt->bindParam(1, $this->uni_id);
+		$stmt->bindParam(1, $this->unid_id);
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$num = $stmt->rowCount();
 		if($num>0){
 			
-$this->uni_id = $row['uni_id'];
-$this->uni_sigla = $row['uni_sigla'];
-$this->uni_nome = $row['uni_nome'];
-$this->uni_padrao = $row['uni_padrao'];
+$this->unid_id = $row['unid_id'];
+$this->unid_slug = $row['unid_slug'];
+$this->unid_nome = $row['unid_nome'];
+$this->usu_id = $row['usu_id'];
+$this->usu_email = $row['usu_email'];
 		}
 		else{
-			$this->uni_id=null;
+			$this->unid_id=null;
 		}
 	}
 	function create(){
-		$query ="INSERT INTO ".$this->table_name." SET uni_id=:uni_id,uni_sigla=:uni_sigla,uni_nome=:uni_nome,uni_padrao=:uni_padrao";
+		$query ="INSERT INTO ".$this->table_name." SET unid_slug=:unid_slug,unid_nome=:unid_nome,usu_id=:usu_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->uni_id=htmlspecialchars(strip_tags($this->uni_id));
-$this->uni_sigla=htmlspecialchars(strip_tags($this->uni_sigla));
-$this->uni_nome=htmlspecialchars(strip_tags($this->uni_nome));
-$this->uni_padrao=htmlspecialchars(strip_tags($this->uni_padrao));
+$this->unid_slug=htmlspecialchars(strip_tags($this->unid_slug));
+$this->unid_nome=htmlspecialchars(strip_tags($this->unid_nome));
+$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
 		
-$stmt->bindParam(":uni_id", $this->uni_id);
-$stmt->bindParam(":uni_sigla", $this->uni_sigla);
-$stmt->bindParam(":uni_nome", $this->uni_nome);
-$stmt->bindParam(":uni_padrao", $this->uni_padrao);
+$stmt->bindParam(":unid_slug", $this->unid_slug);
+$stmt->bindParam(":unid_nome", $this->unid_nome);
+$stmt->bindParam(":usu_id", $this->usu_id);
 		$lastInsertedId=0;
 		if($stmt->execute()){
 			$lastInsertedId = $this->conn->lastInsertId();
-			if($lastInsertedId==0 && $this->uni_id!=null){
+			if($lastInsertedId==0 && $this->unid_id!=null){
 				$this->readOne();
-				if($this->uni_id!=null){
-					$lastInsertedId=$this->uni_id;
+				if($this->unid_id!=null){
+					$lastInsertedId=$this->unid_id;
 					}
 			}
 		}
@@ -184,20 +184,18 @@ $stmt->bindParam(":uni_padrao", $this->uni_padrao);
 		return $lastInsertedId;
 	}
 	function update(){
-		$query ="UPDATE ".$this->table_name." SET uni_id=:uni_id,uni_sigla=:uni_sigla,uni_nome=:uni_nome,uni_padrao=:uni_padrao WHERE uni_id = :uni_id";
+		$query ="UPDATE ".$this->table_name." SET unid_slug=:unid_slug,unid_nome=:unid_nome,usu_id=:usu_id WHERE unid_id = :unid_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->uni_id=htmlspecialchars(strip_tags($this->uni_id));
-$this->uni_sigla=htmlspecialchars(strip_tags($this->uni_sigla));
-$this->uni_nome=htmlspecialchars(strip_tags($this->uni_nome));
-$this->uni_padrao=htmlspecialchars(strip_tags($this->uni_padrao));
-$this->uni_id=htmlspecialchars(strip_tags($this->uni_id));
+$this->unid_slug=htmlspecialchars(strip_tags($this->unid_slug));
+$this->unid_nome=htmlspecialchars(strip_tags($this->unid_nome));
+$this->usu_id=htmlspecialchars(strip_tags($this->usu_id));
+$this->unid_id=htmlspecialchars(strip_tags($this->unid_id));
 		
-$stmt->bindParam(":uni_id", $this->uni_id);
-$stmt->bindParam(":uni_sigla", $this->uni_sigla);
-$stmt->bindParam(":uni_nome", $this->uni_nome);
-$stmt->bindParam(":uni_padrao", $this->uni_padrao);
-$stmt->bindParam(":uni_id", $this->uni_id);
+$stmt->bindParam(":unid_slug", $this->unid_slug);
+$stmt->bindParam(":unid_nome", $this->unid_nome);
+$stmt->bindParam(":usu_id", $this->usu_id);
+$stmt->bindParam(":unid_id", $this->unid_id);
 		$stmt->execute();
 
 	 if($stmt->rowCount()) {
@@ -213,7 +211,7 @@ $stmt->bindParam(":uni_id", $this->uni_id);
 			foreach($jsonObj as $key => $value) 
 			{
 				$columnName=htmlspecialchars(strip_tags($key));
-				if($columnName!='uni_id'){
+				if($columnName!='unid_id'){
 				if($colCount===1){
 					$setValue = $columnName."=:".$columnName;
 				}else{
@@ -223,17 +221,17 @@ $stmt->bindParam(":uni_id", $this->uni_id);
 				}
 			}
 			$setValue = rtrim($setValue,',');
-			$query = $query . " " . $setValue . " WHERE uni_id = :uni_id"; 
+			$query = $query . " " . $setValue . " WHERE unid_id = :unid_id"; 
 			$stmt = $this->conn->prepare($query);
 			foreach($jsonObj as $key => $value) 
 			{
 			    $columnName=htmlspecialchars(strip_tags($key));
-				if($columnName!='uni_id'){
+				if($columnName!='unid_id'){
 				$colValue=htmlspecialchars(strip_tags($value));
 				$stmt->bindValue(":".$columnName, $colValue);
 				}
 			}
-			$stmt->bindParam(":uni_id", $this->uni_id);
+			$stmt->bindParam(":unid_id", $this->unid_id);
 			$stmt->execute();
 
 			if($stmt->rowCount()) {
@@ -243,11 +241,11 @@ $stmt->bindParam(":uni_id", $this->uni_id);
 			}
 	}
 	function delete(){
-		$query = "DELETE FROM " . $this->table_name . " WHERE uni_id = ? ";
+		$query = "DELETE FROM " . $this->table_name . " WHERE unid_id = ? ";
 		$stmt = $this->conn->prepare($query);
-		$this->uni_id=htmlspecialchars(strip_tags($this->uni_id));
+		$this->unid_id=htmlspecialchars(strip_tags($this->unid_id));
 
-		$stmt->bindParam(1, $this->uni_id);
+		$stmt->bindParam(1, $this->unid_id);
 
 	 	$stmt->execute();
 
@@ -260,5 +258,20 @@ $stmt->bindParam(":uni_id", $this->uni_id);
 	}
 
 	
+function readByusu_id(){
+
+if (isset($_GET["pageNo"]))
+{
+$this->pageNo =$_GET["pageNo"]; } 
+$offset = ($this->pageNo - 1) * $this->no_of_records_per_page;
+$query = "SELECT  aaaa.usu_email, t.* FROM ". $this->table_name ." t  left join usuarios aaaa on t.usu_id = aaaa.usu_id  WHERE t.usu_id = ? LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+
+$stmt = $this->conn->prepare( $query );
+$stmt->bindParam(1, $this->usu_id);
+
+$stmt->execute();
+return $stmt;
+}
+
 }
 ?>

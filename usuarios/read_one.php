@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/usuarios.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $usuarios = new Usuarios($db);
@@ -17,15 +25,13 @@ if($usuarios->usu_id!=null){
     $usuarios_arr = array(
         
 "usu_id" => $usuarios->usu_id,
-"usu_name" => $usuarios->usu_name,
+"usu_nome" => $usuarios->usu_nome,
 "usu_email" => html_entity_decode($usuarios->usu_email),
 "usu_password" => $usuarios->usu_password,
-"usu_token_recuperar_senha" => $usuarios->usu_token_recuperar_senha,
-"usut_id" => $usuarios->usut_id,
-"usun_nome" => $usuarios->usun_nome,
-"usun_id" => $usuarios->usun_id,
-"usus_nome" => $usuarios->usus_nome,
-"usus_id" => $usuarios->usus_id
+"usu_reset_token" => $usuarios->usu_reset_token,
+"sta_nome" => $usuarios->sta_nome,
+"sta_id" => $usuarios->sta_id,
+"usut_id" => $usuarios->usut_id
     );
     http_response_code(200);
    echo json_encode(array("status" => "success", "code" => 1,"message"=> "usuarios found","document"=> $usuarios_arr));

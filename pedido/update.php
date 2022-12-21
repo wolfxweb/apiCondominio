@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/pedido.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $pedido = new Pedido($db);
@@ -13,26 +21,22 @@ $pedido = new Pedido($db);
 $data = json_decode(file_get_contents("php://input"));
 $pedido->ped_id = $data->ped_id;
 
-if(!isEmpty($data->ped_nome)
-&&!isEmpty($data->ped_data_abetura)){
+if(!isEmpty($data->ped_titulo)
+&&!isEmpty($data->ped_data)){
 
-if(!isEmpty($data->ped_nome)) { 
-$pedido->ped_nome = $data->ped_nome;
+if(!isEmpty($data->ped_titulo)) { 
+$pedido->ped_titulo = $data->ped_titulo;
 } else { 
-$pedido->ped_nome = '';
+$pedido->ped_titulo = '';
 }
-$pedido->ped_public = $data->ped_public;
-$pedido->ped_slug = $data->ped_slug;
-$pedido->ped_data_finalizacao = $data->ped_data_finalizacao;
-if(!isEmpty($data->ped_data_abetura)) { 
-$pedido->ped_data_abetura = $data->ped_data_abetura;
-} else { 
-$pedido->ped_data_abetura = 'current_timestamp()';
-}
-$pedido->sta_id = $data->sta_id;
-$pedido->loj_id = $data->loj_id;
+$pedido->ped_descricao = $data->ped_descricao;
 $pedido->usu_id = $data->usu_id;
-$pedido->itep_id = $data->itep_id;
+if(!isEmpty($data->ped_data)) { 
+$pedido->ped_data = $data->ped_data;
+} else { 
+$pedido->ped_data = 'current_timestamp()';
+}
+$pedido->ped_local_compra = $data->ped_local_compra;
 if($pedido->update()){
     http_response_code(200);
 	echo json_encode(array("status" => "success", "code" => 1,"message"=> "Updated Successfully","document"=> ""));

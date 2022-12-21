@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/pedido.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $pedido = new Pedido($db);
@@ -17,18 +25,12 @@ if($pedido->ped_id!=null){
     $pedido_arr = array(
         
 "ped_id" => $pedido->ped_id,
-"ped_nome" => html_entity_decode($pedido->ped_nome),
-"ped_public" => $pedido->ped_public,
-"ped_slug" => $pedido->ped_slug,
-"ped_data_finalizacao" => $pedido->ped_data_finalizacao,
-"ped_data_abetura" => $pedido->ped_data_abetura,
-"sta_name" => $pedido->sta_name,
-"sta_id" => $pedido->sta_id,
-"nome" => html_entity_decode($pedido->nome),
-"loj_id" => $pedido->loj_id,
+"ped_titulo" => $pedido->ped_titulo,
+"ped_descricao" => html_entity_decode($pedido->ped_descricao),
 "usu_email" => html_entity_decode($pedido->usu_email),
 "usu_id" => $pedido->usu_id,
-"itep_id" => $pedido->itep_id
+"ped_data" => $pedido->ped_data,
+"ped_local_compra" => html_entity_decode($pedido->ped_local_compra)
     );
     http_response_code(200);
    echo json_encode(array("status" => "success", "code" => 1,"message"=> "pedido found","document"=> $pedido_arr));

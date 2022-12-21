@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/usuarios.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 $usuarios = new Usuarios($db);
 $data = json_decode(file_get_contents("php://input"));

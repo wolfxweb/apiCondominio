@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/usuario_tipo.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $usuario_tipo = new Usuario_Tipo($db);
@@ -18,7 +26,7 @@ if($usuario_tipo->usut_id!=null){
         
 "usut_id" => $usuario_tipo->usut_id,
 "usut_nome" => $usuario_tipo->usut_nome,
-"usut_siglar" => $usuario_tipo->usut_siglar
+"usut_sigla" => $usuario_tipo->usut_sigla
     );
     http_response_code(200);
    echo json_encode(array("status" => "success", "code" => 1,"message"=> "usuario_tipo found","document"=> $usuario_tipo_arr));

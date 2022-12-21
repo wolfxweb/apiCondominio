@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/pedido.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $pedido = new Pedido($db);
@@ -29,18 +37,12 @@ if($num>0){
         $pedido_item=array(
             
 "ped_id" => $ped_id,
-"ped_nome" => html_entity_decode($ped_nome),
-"ped_public" => $ped_public,
-"ped_slug" => $ped_slug,
-"ped_data_finalizacao" => $ped_data_finalizacao,
-"ped_data_abetura" => $ped_data_abetura,
-"sta_name" => $sta_name,
-"sta_id" => $sta_id,
-"nome" => html_entity_decode($nome),
-"loj_id" => $loj_id,
+"ped_titulo" => $ped_titulo,
+"ped_descricao" => html_entity_decode($ped_descricao),
 "usu_email" => html_entity_decode($usu_email),
 "usu_id" => $usu_id,
-"itep_id" => $itep_id
+"ped_data" => $ped_data,
+"ped_local_compra" => html_entity_decode($ped_local_compra)
         );
         array_push($pedido_arr["records"], $pedido_item);
     }

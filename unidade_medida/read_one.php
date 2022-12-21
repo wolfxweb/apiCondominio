@@ -5,21 +5,30 @@ include_once '../config/database.php';
 include_once '../objects/unidade_medida.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $unidade_medida = new Unidade_Medida($db);
 
-$unidade_medida->uni_id = isset($_GET['id']) ? $_GET['id'] : die();
+$unidade_medida->unid_id = isset($_GET['id']) ? $_GET['id'] : die();
 $unidade_medida->readOne();
  
-if($unidade_medida->uni_id!=null){
+if($unidade_medida->unid_id!=null){
     $unidade_medida_arr = array(
         
-"uni_id" => $unidade_medida->uni_id,
-"uni_sigla" => $unidade_medida->uni_sigla,
-"uni_nome" => $unidade_medida->uni_nome,
-"uni_padrao" => $unidade_medida->uni_padrao
+"unid_id" => $unidade_medida->unid_id,
+"unid_slug" => $unidade_medida->unid_slug,
+"unid_nome" => $unidade_medida->unid_nome,
+"usu_email" => html_entity_decode($unidade_medida->usu_email),
+"usu_id" => $unidade_medida->usu_id
     );
     http_response_code(200);
    echo json_encode(array("status" => "success", "code" => 1,"message"=> "unidade_medida found","document"=> $unidade_medida_arr));

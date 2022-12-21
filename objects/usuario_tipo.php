@@ -8,7 +8,7 @@ class Usuario_Tipo{
 	
 public $usut_id;
 public $usut_nome;
-public $usut_siglar;
+public $usut_sigla;
     
     public function __construct($db){
         $this->conn = $db;
@@ -23,7 +23,7 @@ public $usut_siglar;
 	}
 
 	function search_count($searchKey) {
-		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE LOWER(t.usut_nome) LIKE ? OR LOWER(t.usut_siglar) LIKE ? ";
+		$query = "SELECT count(1) as total FROM ". $this->table_name ." t  WHERE LOWER(t.usut_nome) LIKE ? OR LOWER(t.usut_sigla) LIKE ? ";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -87,7 +87,7 @@ $stmt->bindParam(2, $searchKey);
 		$this->pageNo=$_GET["pageNo"];
 		}
 		$offset = ($this->pageNo-1) * $this->no_of_records_per_page; 
-		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE LOWER(t.usut_nome) LIKE ? OR LOWER(t.usut_siglar) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
+		$query = "SELECT  t.* FROM ". $this->table_name ." t  WHERE LOWER(t.usut_nome) LIKE ? OR LOWER(t.usut_sigla) LIKE ?  LIMIT ".$offset." , ". $this->no_of_records_per_page."";
 		$stmt = $this->conn->prepare($query);
 		$searchKey="%".strtolower($searchKey)."%";
 		
@@ -147,23 +147,21 @@ $stmt->bindParam(2, $searchKey);
 			
 $this->usut_id = $row['usut_id'];
 $this->usut_nome = $row['usut_nome'];
-$this->usut_siglar = $row['usut_siglar'];
+$this->usut_sigla = $row['usut_sigla'];
 		}
 		else{
 			$this->usut_id=null;
 		}
 	}
 	function create(){
-		$query ="INSERT INTO ".$this->table_name." SET usut_id=:usut_id,usut_nome=:usut_nome,usut_siglar=:usut_siglar";
+		$query ="INSERT INTO ".$this->table_name." SET usut_nome=:usut_nome,usut_sigla=:usut_sigla";
 		$stmt = $this->conn->prepare($query);
 		
-$this->usut_id=htmlspecialchars(strip_tags($this->usut_id));
 $this->usut_nome=htmlspecialchars(strip_tags($this->usut_nome));
-$this->usut_siglar=htmlspecialchars(strip_tags($this->usut_siglar));
+$this->usut_sigla=htmlspecialchars(strip_tags($this->usut_sigla));
 		
-$stmt->bindParam(":usut_id", $this->usut_id);
 $stmt->bindParam(":usut_nome", $this->usut_nome);
-$stmt->bindParam(":usut_siglar", $this->usut_siglar);
+$stmt->bindParam(":usut_sigla", $this->usut_sigla);
 		$lastInsertedId=0;
 		if($stmt->execute()){
 			$lastInsertedId = $this->conn->lastInsertId();
@@ -178,17 +176,15 @@ $stmt->bindParam(":usut_siglar", $this->usut_siglar);
 		return $lastInsertedId;
 	}
 	function update(){
-		$query ="UPDATE ".$this->table_name." SET usut_id=:usut_id,usut_nome=:usut_nome,usut_siglar=:usut_siglar WHERE usut_id = :usut_id";
+		$query ="UPDATE ".$this->table_name." SET usut_nome=:usut_nome,usut_sigla=:usut_sigla WHERE usut_id = :usut_id";
 		$stmt = $this->conn->prepare($query);
 		
-$this->usut_id=htmlspecialchars(strip_tags($this->usut_id));
 $this->usut_nome=htmlspecialchars(strip_tags($this->usut_nome));
-$this->usut_siglar=htmlspecialchars(strip_tags($this->usut_siglar));
+$this->usut_sigla=htmlspecialchars(strip_tags($this->usut_sigla));
 $this->usut_id=htmlspecialchars(strip_tags($this->usut_id));
 		
-$stmt->bindParam(":usut_id", $this->usut_id);
 $stmt->bindParam(":usut_nome", $this->usut_nome);
-$stmt->bindParam(":usut_siglar", $this->usut_siglar);
+$stmt->bindParam(":usut_sigla", $this->usut_sigla);
 $stmt->bindParam(":usut_id", $this->usut_id);
 		$stmt->execute();
 

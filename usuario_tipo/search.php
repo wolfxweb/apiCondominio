@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/usuario_tipo.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $usuario_tipo = new Usuario_Tipo($db);
@@ -30,7 +38,7 @@ if($num>0){
             
 "usut_id" => $usut_id,
 "usut_nome" => $usut_nome,
-"usut_siglar" => $usut_siglar
+"usut_sigla" => $usut_sigla
         );
         array_push($usuario_tipo_arr["records"], $usuario_tipo_item);
     }

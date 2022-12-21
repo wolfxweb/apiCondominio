@@ -2,7 +2,15 @@
 include_once '../config/header.php';
 include_once '../config/database.php';
 include_once '../token/validatetoken.php';
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $filename = isset($_GET['filename']) ? $_GET['filename'] : die();

@@ -5,7 +5,15 @@ include_once '../config/database.php';
 include_once '../objects/status.php';
 include_once '../token/validatetoken.php';
 
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $status = new Status($db);
@@ -18,7 +26,7 @@ if($status->sta_id!=null){
         
 "sta_id" => $status->sta_id,
 "sta_sigla" => $status->sta_sigla,
-"sta_name" => $status->sta_name
+"sta_nome" => $status->sta_nome
     );
     http_response_code(200);
    echo json_encode(array("status" => "success", "code" => 1,"message"=> "status found","document"=> $status_arr));

@@ -4,7 +4,15 @@ include_once '../config/helper.php';
 include_once '../config/database.php';
 include_once '../objects/categorias.php';
 include_once '../token/validatetoken.php';
-$database = new Database();
+if (isset($decodedJWTData) && isset($decodedJWTData->tenant))
+{
+$database = new Database($decodedJWTData->tenant); 
+}
+else 
+{
+$database = new Database(); 
+}
+
 $db = $database->getConnection();
 
 $categorias = new Categorias($db);
@@ -34,7 +42,8 @@ if($num>0){
 "cat_nome" => html_entity_decode($cat_nome),
 "cat_descricao" => html_entity_decode($cat_descricao),
 "cat_padrao" => $cat_padrao,
-"cat_img_url" => $cat_img_url
+"usu_email" => html_entity_decode($usu_email),
+"usu_id" => $usu_id
         );
  
         array_push($categorias_arr["records"], $categorias_item);
