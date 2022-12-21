@@ -9,9 +9,9 @@ class Database{
 
     function __construct($dbName="appLista") {
         $this->db_name = $dbName;
-        $this->host = "localhost";
-        $this->username = "wolfx";
-        $this->password = "wolfx";
+        $this->host = "137.184.184.226";
+        $this->username = "wolf";
+        $this->password = "wolf";
         $this->port = "3306";
         $this->conn = null;
     }
