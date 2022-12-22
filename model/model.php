@@ -20,15 +20,17 @@ class Model{
     public function select($camposRetorno = "", $joinConsulta=[]){
         try {
             $this->getConn();
-            $this->camposRetorno = !empty($camposRetorno)?$camposRetorno:"*";
+            $this->camposRetorno = !empty($camposRetorno)?$camposRetorno:" * ";
             $this->join = $joinConsulta;
-            $valores = array_values($this->dados);           
-
+           // $valores = array_values($this->dados);           
+           
             foreach($this->dados as $key => $dado){
                 $type = gettype($dado);
-                $this->where .=$this->setColunas($type, $key,$dado, " AND ");
+                $prefixo = explode("_",$key);
+                $coluna = "{$prefixo}.{$key}";
+                $this->where .=$this->setColunas($type,$coluna,$dado, " AND ");
             }
-           $this->query = "SELECT {$this->camposRetorno}  FROM {$this->tabela} ";
+            $this->query = "SELECT {$this->camposRetorno}  FROM {$this->tabela} ";
             if(count($this->join) >0){
                $this->montaJoin() ;
             }
@@ -69,6 +71,7 @@ class Model{
             $stmt =  $this->conn->prepare($query);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->where = " WHERE 1=1 ";
 	        return $row['total'];
         } catch (\Throwable $th) {
             //throw $th;
