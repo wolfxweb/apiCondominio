@@ -6,7 +6,7 @@ class Model{
     private $database;
     private $conn;
     private $query ;
-    private $where = " WHERE 1=1 ";
+    protected $where = " WHERE 1=1 ";
     private $arrayTypes =[
         'integer'=>"integer",
         "double"=>"double"

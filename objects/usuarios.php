@@ -44,7 +44,7 @@ class Usuarios extends Model{
 			return  false;
 		}
 		if($this->insert('usuarios',$this->dados) == TRUE){
-		//	Response::response(CADASTRADO_CRIADO,"",REQ_CRIADO);
+			//Response::response(CADASTRADO_CRIADO,"",REQ_CRIADO);// alterdo para já retorar o novo usuário.
 		    return	$this->validaLogin();
 		}else{
 			Response::response(ERROR_CADASTRO, "",REQ_ERROR_SERVIDOR,ERROR,0 );
@@ -118,7 +118,7 @@ class Usuarios extends Model{
 		 }
 	}
 	private function selecionaUsuarioLogado(){
-		$this->where = " WHERE usu.usu_email = maria6@gmail.com";
+		$this->where .= " AND usu.usu_email = '{$this->usu_email}'";
       $usuario =  $this->select($this->camposRetornoUsuario,$this->joinCadastroUsuario);
 	  return $usuario[0];
 	}
