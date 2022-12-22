@@ -16,7 +16,7 @@ class Usuarios extends Model{
  
     private $table_name = "usuarios usu";
 
-	private $camposRetornoUsuario =" usu.usu_id , usu.usu_name , usu.usu_email , usu.usu_token_recuperar_senha ,usus.usus_nome, usus.usus_sigla,usun.usun_nome,usun.usun_sigla ";
+	private $camposRetornoUsuario =" usu.usu_id , usu.usu_name , usu.usu_email , usus.usus_nome, usus.usus_sigla,usun.usun_nome,usun.usun_sigla ";
 	private $joinCadastroUsuario =[	'usu_id'=>" JOIN usuario_status usus ON usus.usus_id = usu.usus_id ",
 									'usn_id'=>" JOIN usuario_nivel_acesso usun ON usun.usun_id = usu.usun_id "
 								];
@@ -58,12 +58,9 @@ class Usuarios extends Model{
 			Response::response('Usuário não encontrado', "",REQ_ERROR_DADOS_ENVIADO,ERROR,0 );
 			return false;
 		}
-
 		$dados['usu_token_recuperar_senha'] =random_int(10000,99999);
 		$where = "  where usu_id = {$usuario[0]['usu_id']}";
 		$this->update($dados, $where );
-		//Response::response('Usuário encontrado',$usuario,REQ_SOLICITACAO_OK,SUCCESS,0 );
-
         $email =[
           'destinatario'=>$usuario[0]['usu_email'],
 		  'nomeDestinatario'=>$usuario[0]['usu_name'],
@@ -72,8 +69,6 @@ class Usuarios extends Model{
 		  'body'=>"<p>Olá, {$usuario[0]["usu_name"]}<br>Segue o código {$dados["usu_token_recuperar_senha"]} para recuperar a senha </>",
 
 		];
-
-
 		$sendEmail = new EmailRecuperacaoSenha($email);
 		$emailEnviado = $sendEmail->sendEmailRecuperarSenha();
         if($sendEmail->sendEmailRecuperarSenha()){
@@ -90,7 +85,7 @@ class Usuarios extends Model{
 			$jwt = JWT::encode($token, SECRET_KEY);
 			$iat = time() + (1 * 24 * 60 * 60); 	  
 			$tokenExp = $iat + 60 * 87600; 
-			$tokenOutput = array( "access_token" => $jwt, "expires_in" => $tokenExp, "token_type" => "bearer");
+			$tokenOutput = array( "access_token" => $jwt, "expires_in" => $tokenExp, "token_type" => "bearer","user"=>$this->selecionaUsuarioLogado());
 			Response::response($msgResponse,$tokenOutput,REQ_SOLICITACAO_OK,SUCCESS,1 );
             return true;
 		}else{
@@ -122,6 +117,10 @@ class Usuarios extends Model{
 			return false;
 		 }
 	}
-		
+	private function selecionaUsuarioLogado(){
+      $usuario =  $this->select($this->camposRetornoUsuario,$this->joinCadastroUsuario);
+	  return $usuario[0];
+	}
+	
 }
 ?>
